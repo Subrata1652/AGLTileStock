@@ -17,7 +17,8 @@ if fl is not None:
             df=pd.read_csv(fl.name,encoding="ISO-8859-1") 
             st.write(df)             
       elif fl.name.endswith('xlsx'):
-            df=pd.read_excel("sales_reg.xlsx",sheet_name='Sheet1',index_col=None,usecols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales'],engine='openpyxl')
+            df=pd.read_excel(fl,sheet_name='Sheet1',index_col=None,usecols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales'],engine='openpyxl')
+            #df=pd.read_excel("sales_reg.xlsx",sheet_name='Sheet1',index_col=None,usecols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales'],engine='openpyxl')
             df["Posting Date"]=pd.to_datetime(df["Posting Date"])   
             with col1:
                   date1=pd.to_datetime(st.date_input("Start Date",pd.to_datetime(df["Posting Date"]).min()))
