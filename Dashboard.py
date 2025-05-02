@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+from matplotlib import colormaps
 import os
 import warnings
 
@@ -18,7 +19,6 @@ if fl is not None:
             st.write(df)             
       elif fl.name.endswith('xlsx'):
             df=pd.read_excel(fl,sheet_name='Sheet1',index_col=None,usecols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales'],engine='openpyxl')
-            #df=pd.read_excel("sales_reg.xlsx",sheet_name='Sheet1',index_col=None,usecols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales'],engine='openpyxl')
             df["Posting Date"]=pd.to_datetime(df["Posting Date"])   
             with col1:
                   date1=pd.to_datetime(st.date_input("Start Date",pd.to_datetime(df["Posting Date"]).min()))
@@ -78,27 +78,29 @@ if fl is not None:
                   filtered_df=df4
             elif not cst and not dnm and not sz:
                   filtered_df=df5
+            with st.container():
+                  with st.expander("View Query Result"):
+                        st.write(filtered_df.style.background_gradient(axis=0,gmap=filtered_df['Quantity'],cmap="YlOrRd"))
+                        csv=filtered_df.to_csv(index=False).encode('utf-8')
+                        st.download_button("Dowload Results",csv,mime="text/csv",help="Click here to Download data")
+            
             with col1:
-                  #if not sz and not des:
-                        if not dnm:
+                  if not dnm:
                               bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date'].dt.month_name()],columns=['Customer State Code'],aggfunc="sum",sort=False)
                               st.subheader("State Wise Sales")
-                              st.write(bar_data)
+                              #st.write(bar_data)
                               fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
-                              st.plotly_chart(fig,use_container_width=True, height=300)  
-                        elif  dnm:
+                              st.plotly_chart(fig,use_container_width=True, height=300) 
+            
+                  elif  dnm:
                               bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date'].dt.month_name()],columns=['Customer Name'],aggfunc="sum",sort=False)
                               st.subheader("Dealer Wise Sales")
-                              st.write(bar_data)
+                              #st.write(bar_data)
                               fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
-                              st.plotly_chart(fig,use_container_width=True, height=300)   
+                              st.plotly_chart(fig,use_container_width=True, height=300)         
             with col2:
-                  #if sz and not des:
-                        bar_data=pd.pivot_table(filtered_df,values='Quantity',index=[filtered_df['Posting Date'].dt.month_name()],columns=['Size'],aggfunc="sum",sort=False)
-                        st.subheader("Size Wise Sales")
-                        st.write(bar_data)
-                        fig=px.bar(bar_data,x=bar_data.index,y=bar_data.columns,barmode='group')
-                        st.plotly_chart(fig,use_container_width=True, height=300) 
+                  fig=px.pie(filtered_df,values='Net Sales',names='Customer State Code', title='State Wise Sales')
+                  st.plotly_chart(fig,use_container_width=True, height=300)
       else:       
             st.write("Sorry")
 
