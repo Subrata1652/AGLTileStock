@@ -18,13 +18,17 @@ if fl is not None:
             df=pd.read_csv(fl.name,encoding="ISO-8859-1") 
             st.write(df)             
       elif fl.name.endswith('xlsx'):
-            df=pd.read_excel(fl,sheet_name='Sheet1',index_col=None,usecols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales'],engine='openpyxl')
-            df["Posting Date"]=pd.to_datetime(df["Posting Date"])   
+            desired_cols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales']
+            df=pd.read_excel(fl,sheet_name='Sheet1',index_col=None,usecols=lambda x: x in desired_cols,engine='openpyxl')
+            df['Posting Date']=pd.to_datetime(df['Posting Date']).dt.date
             with col1:
-                  date1=pd.to_datetime(st.date_input("Start Date",pd.to_datetime(df["Posting Date"]).min()))
+                  #date1=pd.to_datetime(st.date_input("Start Date",pd.to_datetime(df["Posting Date"]).min()))
+                  date1=st.date_input("Start Date",df["Posting Date"].min())
             with col2:
-                  date2=pd.to_datetime(st.date_input("End Date",pd.to_datetime(df["Posting Date"]).max())) 
-            df=df[(df["Posting Date"] >= date1) & (df["Posting Date"] <= date2)].copy()   
+                  #date2=pd.to_datetime(st.date_input("End Date",pd.to_datetime(df["Posting Date"]).max())) 
+                  date2=st.date_input("End Date",df["Posting Date"].max())
+            df=df[(df["Posting Date"] >= date1) & (df["Posting Date"] <= date2)].copy() 
+
             cst=st.sidebar.multiselect("Pick State:",df['Customer State Code'].unique())
             if not cst:
                   df2=df.copy()
@@ -86,14 +90,14 @@ if fl is not None:
             
             with col1:
                   if not dnm:
-                              bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date'].dt.month_name()],columns=['Customer State Code'],aggfunc="sum",sort=False)
+                              bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date']],columns=['Customer State Code'],aggfunc="sum",sort=False)
                               st.subheader("State Wise Sales")
                               #st.write(bar_data)
                               fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
                               st.plotly_chart(fig,use_container_width=True, height=300) 
             
                   elif  dnm:
-                              bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date'].dt.month_name()],columns=['Customer Name'],aggfunc="sum",sort=False)
+                              bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date']],columns=['Customer Name'],aggfunc="sum",sort=False)
                               st.subheader("Dealer Wise Sales")
                               #st.write(bar_data)
                               fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
