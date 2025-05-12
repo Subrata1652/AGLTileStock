@@ -84,27 +84,30 @@ if fl is not None:
                   filtered_df=df5
             with st.container():
                   with st.expander("View Query Result"):
+                        pd.set_option("styler.render.max_elements", 664076)
                         st.write(filtered_df.style.background_gradient(axis=0,gmap=filtered_df['Quantity'],cmap="YlOrRd"))
                         csv=filtered_df.to_csv(index=False).encode('utf-8')
                         st.download_button("Dowload Results",csv,mime="text/csv",help="Click here to Download data")
             
             with col1:
-                  if not dnm:
-                              bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date']],columns=['Customer State Code'],aggfunc="sum",sort=False)
-                              st.subheader("State Wise Sales")
-                              #st.write(bar_data)
-                              fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
-                              st.plotly_chart(fig,use_container_width=True, height=300) 
+                  #if not dnm:
+                  #            bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date']],columns=['Customer State Code'],aggfunc="sum",sort=False)
+                  #            st.subheader("State Wise Sales")
+                  ##            #st.write(bar_data)
+                  #            fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
+                  #            st.plotly_chart(fig,use_container_width=True, height=300) 
             
-                  elif  dnm:
-                              bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date']],columns=['Customer Name'],aggfunc="sum",sort=False)
-                              st.subheader("Dealer Wise Sales")
-                              #st.write(bar_data)
-                              fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
-                              st.plotly_chart(fig,use_container_width=True, height=300)         
+                  #elif  dnm:
+                  #            bar_data=pd.pivot_table(filtered_df,values='Net Sales',index=[filtered_df['Posting Date']],columns=['Customer Name'],aggfunc="sum",sort=False)
+                  #            st.subheader("Dealer Wise Sales")
+                  #            #st.write(bar_data)
+                  #            fig=px.bar(bar_data,x=bar_data.index, y=bar_data.columns, barmode='group')
+                  #            st.plotly_chart(fig,use_container_width=True, height=300)         
+                  pass
             with col2:
-                  fig=px.pie(filtered_df,values='Net Sales',names='Customer State Code', title='State Wise Sales')
-                  st.plotly_chart(fig,use_container_width=True, height=300)
+                  #fig=px.pie(filtered_df,values='Net Sales',names='Customer State Code', title='State Wise Sales')
+                  #t.plotly_chart(fig,use_container_width=True, height=300)
+                  pass
       else:       
             st.write("Sorry")
 
