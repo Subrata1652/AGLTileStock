@@ -3,6 +3,7 @@ import plotly.express as px
 import pandas as pd
 from matplotlib import colormaps
 import os
+from io import BytesIO
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -19,7 +20,8 @@ if fl is not None:
             st.write(df)             
       elif fl.name.endswith('xlsx'):
             desired_cols=['Customer State Code','Customer Name','Size','Description','Posting Date','Quantity','Net Sales']
-            df=pd.read_excel(fl,sheet_name='Sheet1',index_col=None,usecols=lambda x: x in desired_cols,engine='openpyxl')
+            file_bytes=BytesIO(fl.read())
+            df=pd.read_excel(file_bytes,sheet_name='Sheet1',index_col=None,usecols=lambda x: x in desired_cols,engine='openpyxl')
             df['Posting Date']=pd.to_datetime(df['Posting Date']).dt.date
             with col1:
                   #date1=pd.to_datetime(st.date_input("Start Date",pd.to_datetime(df["Posting Date"]).min()))
